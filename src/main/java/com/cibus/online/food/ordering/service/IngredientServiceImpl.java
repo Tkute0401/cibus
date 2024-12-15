@@ -29,6 +29,7 @@ public class IngredientServiceImpl implements IngredientsService{
 
         category.setRestaurant(restaurant);
         category.setName(name);
+        category.setIngredientsItems(new java.util.ArrayList<>());
         return ingredientCategoryRepository.save(category);
     }
 
@@ -66,7 +67,7 @@ public class IngredientServiceImpl implements IngredientsService{
         item.setCategory(category);
 
         IngredientsItems ingredient = ingredientItemRepository.save(item);
-        category.getIngredientsItems().add(ingredient);
+            category.getIngredientsItems().add(ingredient);
 
         return ingredient;
     }

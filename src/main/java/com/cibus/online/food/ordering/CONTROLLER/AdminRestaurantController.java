@@ -20,7 +20,7 @@ public class AdminRestaurantController {
     @Autowired
     private UserService userService;
 
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<Restaurant> createRestaurant(
             @RequestBody CreateRestaurantRequest req,
             @RequestHeader("Authorization") String jwt) throws Exception {
@@ -28,7 +28,7 @@ public class AdminRestaurantController {
         Restaurant restaurant = restaurantService.crateRestaurant(req, user);
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
     }
-    @PutMapping()
+    @PutMapping("")
     public ResponseEntity<Restaurant> updateRestaurant(
             @RequestBody CreateRestaurantRequest req,
             @RequestHeader("Authorization") String jwt,
@@ -37,7 +37,7 @@ public class AdminRestaurantController {
         Restaurant restaurant = restaurantService.updateRestaurant(id, req);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteRestaurant(
             @RequestHeader("Authorization") String jwt,
             @PathVariable long id ) throws Exception {

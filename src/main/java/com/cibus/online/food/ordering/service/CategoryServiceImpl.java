@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategorySerice{
 
     @Override
     public List<Category> findCategoryByRestaurantId(Long id) throws Exception {
-        Restaurant restaurant =restaurantService.getRestaurantByUserId(id);
+        Restaurant restaurant =restaurantService.getRestaurantById(id);
         return cAtegoryRepository.findByRestaurantId(restaurant.getId());
     }
 

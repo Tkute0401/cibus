@@ -24,6 +24,7 @@ public class CartController {
     @PutMapping("/cart/add")
     public ResponseEntity<CartItems> addItemToCart(@RequestBody AddCartItemRequest req, @RequestHeader("Authorization") String jwt) throws Exception{
 
+        System.out.println("Request:     ajahfpsaihaps;pifpasfn;ahsfjnsapifjasnfpashfapsifasbfaspibc " + req);
         CartItems cartItems = cartService.addItemToCart(req,jwt);
 
         return new ResponseEntity<>(cartItems, HttpStatus.OK);
@@ -63,29 +64,3 @@ public class CartController {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

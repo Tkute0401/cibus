@@ -1,5 +1,6 @@
 package com.cibus.online.food.ordering.request;
 
+import com.cibus.online.food.ordering.Model.IngredientsItems;
 import lombok.Data;
 
 import java.util.List;
@@ -8,6 +9,6 @@ import java.util.List;
 public class AddCartItemRequest {
     private Long foodId;
     private int quantity;
-    private List<String> ingredients;
+    private List<IngredientsItems> ingredients;
 
 }

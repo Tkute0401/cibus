@@ -6,9 +6,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -29,8 +32,10 @@ public class User {
 
     private USER_ROLE role=USER_ROLE.ROLE_CUSTOMER;
 
+
+    @ToString.Exclude
+    @OneToMany
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "customer")
     private List<Order> orders = new ArrayList<>();
 
     @ElementCollection

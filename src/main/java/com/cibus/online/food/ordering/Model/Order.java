@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,9 +20,11 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
+    @ToString.Exclude
     @ManyToOne
+    @JsonIgnore
     private User customer;
 
     @JsonIgnore
@@ -37,12 +40,11 @@ public class Order {
     @ManyToOne
     private Address deliveryAddress;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItems> orderItems;
 
     private int totalItems;
 
-    private double totalPrice;
 
     //private Payment paymentMethod;
 

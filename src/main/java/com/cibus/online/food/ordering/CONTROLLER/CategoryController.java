@@ -4,6 +4,7 @@ import com.cibus.online.food.ordering.Model.Category;
 import com.cibus.online.food.ordering.Model.Restaurant;
 import com.cibus.online.food.ordering.Model.User;
 import com.cibus.online.food.ordering.service.CategorySerice;
+import com.cibus.online.food.ordering.service.RestaurantService;
 import com.cibus.online.food.ordering.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class CategoryController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RestaurantService restaurantService;
+
     @PostMapping("/admin/category")
     public ResponseEntity<Category> createCategory(@RequestBody Category category,
                                                    @RequestHeader("Authorization") String jwt)throws Exception{
@@ -33,11 +37,11 @@ public class CategoryController {
 
 
     }
-    @GetMapping("/category/restaurant")
-    public ResponseEntity<List<Category>> getRestaurantCategory(@RequestHeader("Authorization") String jwt)throws Exception{
-        User user = userService.findUserByJwtToken(jwt);
-        List<Category> categories = categorySerice.findCategoryByRestaurantId(user.getId());
-        return new ResponseEntity<>(categories, HttpStatus.CREATED);
+    @GetMapping("/category/restaurant/{id}")
+    public ResponseEntity<List<Category>> getRestaurantCategory(@PathVariable Long id,
+            @RequestHeader("Authorization") String jwt)throws Exception{
+        List<Category> categories = categorySerice.findCategoryByRestaurantId(id);
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 }
 

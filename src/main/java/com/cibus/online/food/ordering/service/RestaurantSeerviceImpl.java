@@ -1,19 +1,18 @@
 package com.cibus.online.food.ordering.service;
 
-import com.cibus.online.food.ordering.Model.Address;
-import com.cibus.online.food.ordering.Model.Restaurant;
-import com.cibus.online.food.ordering.Model.User;
-import com.cibus.online.food.ordering.Repository.AddressRipository;
-import com.cibus.online.food.ordering.Repository.RestaurantRepository;
-import com.cibus.online.food.ordering.Repository.UserRepository;
+import com.cibus.online.food.ordering.Model.*;
+import com.cibus.online.food.ordering.Repository.*;
 import com.cibus.online.food.ordering.dto.RestaurantDto;
 import com.cibus.online.food.ordering.request.CreateRestaurantRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class RestaurantSeerviceImpl implements RestaurantService{
@@ -21,22 +20,31 @@ public class RestaurantSeerviceImpl implements RestaurantService{
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+   // Set<List> favourite = new LinkedHashSet<>();
+
     @Autowired
     private AddressRipository addressRipository;
 
 
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    private IngredientItemRepository ingredientItemRepository;
+    @Autowired
+    private FoodRepository foodRepository;
 
 
     @Override
     public Restaurant crateRestaurant(CreateRestaurantRequest req, User user) {
+        if(req==null)
+        {
+            throw new IllegalArgumentException("CreateRestaurantRequest is null");
+        }
 
         Address address = addressRipository.save(req.getAddress());
         Restaurant restaurant = new Restaurant();
         restaurant.setAddress(address);
-        restaurant.setContactInfo(req.getContactInformation());
+        restaurant.setContactInformation(req.getContactInformation());
         restaurant.setCuisineType(req.getCuisine_type());
         restaurant.setDescription(req.getDescription());
         restaurant.setImages(req.getImages());
@@ -63,8 +71,8 @@ public class RestaurantSeerviceImpl implements RestaurantService{
             restaurant.setName(updateRestaurant.getName());
         if (restaurant.getOpeningHours()!=null)
             restaurant.setOpeningHours(updateRestaurant.getOpeningHours());
-        if (restaurant.getContactInfo()!=null)
-            restaurant.setContactInfo(updateRestaurant.getContactInformation());
+        if (restaurant.getContactInformation()!=null)
+            restaurant.setContactInformation(updateRestaurant.getContactInformation());
         if (restaurant.getAddress()!=null)
             restaurant.setAddress(updateRestaurant.getAddress());
         return restaurantRepository.save(restaurant);
@@ -73,14 +81,23 @@ public class RestaurantSeerviceImpl implements RestaurantService{
     @Override
     public void deleteRestaurant(long restaurantId) throws Exception {
 
+        List<Food> foodIngredients = foodRepository.findByRestaurantId(restaurantId);
+        foodRepository.deleteAll(foodIngredients);
+        List<IngredientsItems> ingredientsItems = ingredientItemRepository.findByRestaurantId(restaurantId);
+        ingredientItemRepository.deleteAll(ingredientsItems);
         Restaurant restaurant = getRestaurantById(restaurantId);
         restaurantRepository.delete(restaurant);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Restaurant> getAllRestaurants() {
+        System.out.println("Getting all restaurants...");
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+        System.out.println("Restaurants: " + restaurants);
+        System.out.println("Exiting");
+        return restaurants;
 
-        return restaurantRepository.findAll();
     }
 
     @Override
@@ -108,22 +125,33 @@ public class RestaurantSeerviceImpl implements RestaurantService{
 
     @Override
     public RestaurantDto addToFavourite(long restaurantId, User user) throws Exception {
-        Restaurant restaurant = getRestaurantById(restaurantId);
-        RestaurantDto dto = new RestaurantDto();
-        dto.setDescription(restaurant.getDescription());
-        dto.setImages(restaurant.getImages());
+        Restaurant restaurant=getRestaurantById(restaurantId);
+
+        RestaurantDto dto=new RestaurantDto();
         dto.setTitle(restaurant.getName());
+        dto.setImages(restaurant.getImages());
         dto.setId(restaurant.getId());
+        dto.setDescription(restaurant.getDescription());
 
+        boolean isFavorited = false;
+        List<RestaurantDto> favorites = user.getFavourite();
+        for (RestaurantDto favorite : favorites) {
+            if (favorite.getId().equals(restaurantId)) {
+                isFavorited = true;
+                break;
+            }
+        }
 
-        if(user.getFavourite().contains(dto))
-            user.getFavourite().remove(dto);
-        else user.getFavourite().add(dto);
+        if (isFavorited) {
+            favorites.removeIf(favorite -> favorite.getId().equals(restaurantId));
+        } else {
+            favorites.add(dto);
+        }
 
-
-        userRepository.save(user);
+        User updatedUser = userRepository.save(user);
         return dto;
     }
+
     @Override
     public Restaurant updateRestaurantStatus(long id) throws Exception {
         Restaurant restaurant = getRestaurantById(id);

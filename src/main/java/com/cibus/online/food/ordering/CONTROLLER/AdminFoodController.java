@@ -13,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/admin/food")
+@RequestMapping("api/admin/food")
 public class AdminFoodController {
     @Autowired
     private FoodService foodService;
@@ -22,14 +24,14 @@ public class AdminFoodController {
     private UserService userService;
     @Autowired
     private RestaurantService restaurantService;
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<Food> createFood(@RequestBody CreateFoodRequest req, @RequestHeader("Authorization") String jwt) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
         Restaurant restaurant = restaurantService.getRestaurantById(req.getRestaurantId());
         Food food = foodService.createFood(req,req.getCategory(),restaurant);
-        return new ResponseEntity<>(food, HttpStatus.CREATED);
+        return new ResponseEntity<Food>(food, HttpStatus.CREATED);
     }
-    @PostMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteFood(@PathVariable long id, @RequestHeader("Authorization") String jwt) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
         foodService.deleteFood(id);

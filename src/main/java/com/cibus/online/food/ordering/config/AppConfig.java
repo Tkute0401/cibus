@@ -24,26 +24,28 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class AppConfig {
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        http.sessionManagement(management->management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(Authorize->Authorize
-                        .requestMatchers("/api/admin.**").hasAnyRole("RESTAURENT_OWNER","ADMIN")
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
-                ).addFilterBefore(new JwtTockenValidator(), BasicAuthenticationFilter.class)
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors->cors.configurationSource(corsConigurationSource()));
-        return null;
-    }
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(Authorize -> Authorize
+                    .requestMatchers("/api/admin/**").hasAnyRole("RESTAURENT_OWNER", "ADMIN")
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().permitAll()
+            )
+            .addFilterBefore(new JwtTockenValidator(), BasicAuthenticationFilter.class)
+            .csrf(csrf->csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-    private CorsConfigurationSource corsConigurationSource() {
+    return http.build();
+}
+
+    private CorsConfigurationSource corsConfigurationSource() {
         return new CorsConfigurationSource() {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration cfg = new CorsConfiguration();
                 cfg.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:3032"
+                        "http://localhost:3000"
                 ));
                 cfg.setAllowedMethods(Collections.singletonList("*"));
                 cfg.setAllowCredentials(true);

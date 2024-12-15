@@ -21,17 +21,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class JwtTockenValidator extends OncePerRequestFilter {
+@Override
+protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain filterChain) throws ServletException, IOException {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    String jwt = request.getHeader(JwtConstant.JWT_HEADER);
+    System.out.println("Received JWT token: " + jwt);
+    if (jwt != null && jwt.startsWith("Bearer ")) {
+        jwt = jwt.substring(7);  // Remove "Bearer " from the token
+        System.out.println("Received JWT token: " + jwt);
 
-        String jwt=request.getHeader(JwtConstant.JWT_HEADER);
-
-        if(jwt!=null){
-            jwt=jwt.substring(7);
+        if(!jwt.isEmpty()) {
             try {
+
                 SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
                 Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
 
@@ -40,16 +43,15 @@ public class JwtTockenValidator extends OncePerRequestFilter {
 
                 List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(email,null,auth);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, auth);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            }
-            catch (Exception e){
-                throw new BadCredentialsException("invalid token....");
+            } catch (Exception e) {
+                throw new BadCredentialsException("Invalid token", e);
             }
         }
-
-        filterChain.doFilter(request,response);
-
     }
+
+    filterChain.doFilter(request, response);
 }
+}
+

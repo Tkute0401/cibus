@@ -11,6 +11,7 @@ import com.cibus.online.food.ordering.request.AddCartItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -109,7 +110,11 @@ public class CartSericeImpl implements CartService{
     @Override
     public Cart clearCart(Long userId) throws Exception {
         Cart cart = findCartByUserId(userId);
+        List<CartItems> cartItems = cart.getItems();
+        cartItems.forEach(item -> cartItemRepository.delete(item));
         cart.getItems().clear();
+
+
         return cartRepository.save(cart);
     }
 }

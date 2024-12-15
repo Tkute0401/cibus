@@ -56,7 +56,7 @@ public class AuthController {
         createdUser.setName(user.getName());
         createdUser.setRole(user.getRole());
         createdUser.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        System.out.println(user.getPassword());
         User savedUser = userRepository.save(createdUser);
 
         Cart cart = new Cart();
@@ -69,10 +69,11 @@ public class AuthController {
         String jwt = jwtProvider.generateToken(authentication);
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
+        
         authResponse.setMessage("Registeration successful");
         authResponse.setRole(savedUser.getRole());
 
-        return null;
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
