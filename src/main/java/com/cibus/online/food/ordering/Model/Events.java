@@ -1,0 +1,36 @@
+package com.cibus.online.food.ordering.Model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Events {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
+	private String image;
+	
+	private String startedAt;
+	
+	private String endsAt;
+	
+	private String name;
+
+	private String description;
+	
+	@ManyToOne()
+	//@JsonIgnore
+	//@JsonIgnore
+	private Restaurant restaurant;
+	
+	private String location;
+
+}
