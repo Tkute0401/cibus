@@ -33,7 +33,7 @@ public class OrderItems {
             name = "order_item_ingredients",
             joinColumns = @JoinColumn(name = "order_item_id"),
             foreignKey = @ForeignKey(name = "fk_order_item_ingredients_ingredients", foreignKeyDefinition = "FOREIGN KEY (ingredients_id) REFERENCES ingredients_item (id) ON DELETE CASCADE"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"oorder_item_id", "ingredients_id"}, name = "uc_order_item_ingredients")
+            uniqueConstraints = @UniqueConstraint(columnNames = {"order_item_id", "ingredients_id"}, name = "uc_order_item_ingredients")
     )
     private List<IngredientsItems> ingredients;
 
